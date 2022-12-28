@@ -9,10 +9,20 @@ app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 
-@app.route("/auth", methods = ["GET"])
+@app.route("/auth", methods = ["POST"])
 def auth():
     # git id pass from request and mathc it with the username and password in DB.
-    pass
+    username = request.form.get("username")
+    password = request.form.get("pass")
+
+    person = User.query.filter_by(username = username).first()
+    if person is None:
+        return "acnf" # account not found
+    else:
+        if password == person.password:
+            return "alwd" # allowed
+
+    return "0"
 
 class User(db.Model):
     _id = db.Column("id", db.Integer, primary_key=True)

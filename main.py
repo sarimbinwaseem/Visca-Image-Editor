@@ -13,6 +13,7 @@ class Ui(QtWidgets.QDialog):
 
 	def login(self):
 		'''Login logic'''
+		response = None
 		payload = {"username": "Saif", "pass": "optp"}
 		try:
 			r = requests.post("http://127.0.0.1:5656/auth", data = payload)
@@ -23,14 +24,15 @@ class Ui(QtWidgets.QDialog):
 
 		if response == "alwd":
 			# from visca import Box
-    		# box = Box()
-    		# box.show()
-    		# self.hide()
+			# box = Box()
+			# box.show()
+			# self.hide()
+			print("Allowed")
 
-    	elif response == "acnf":
-    		self.notif.setText("Incorrect username or password.")
-    	else:
-    		self.notif.setText("Some error ocurred.")
+		elif response == "acnf":
+			self.notif.setText("Incorrect username or password.")
+		else:
+			self.notif.setText("Some error ocurred.")
 
 if __name__ == "__main__":
 	app = QtWidgets.QApplication(sys.argv)

@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets, uic, QtCore, QtGui
-import sys, threading, random, requests, subprocess, os
-from time import sleep
+import sys, requests, os
+# from time import sleep
 
 
 class Ui(QtWidgets.QDialog):
@@ -14,7 +14,9 @@ class Ui(QtWidgets.QDialog):
 	def login(self):
 		'''Login logic'''
 		response = None
-		payload = {"username": "Saif", "pass": "optp"}
+		username = str(self.usernameInput.text())
+		passwd = str(self.passwordInput.text())
+		payload = {"username": username, "pass": passwd}
 		try:
 			r = requests.post("http://127.0.0.1:5656/auth", data = payload)
 		except:

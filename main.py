@@ -25,10 +25,10 @@ class Ui(QtWidgets.QDialog):
 			response = r.text
 
 		if response == "alwd":
-			# from visca import Box
-			# box = Box()
-			# box.show()
-			# self.hide()
+			from visca import Visca
+			box = Visca()
+			box.show()
+			self.hide()
 			print("Allowed")
 
 		elif response == "acnf":

@@ -6,3 +6,4 @@ Pillow==9.4.0
 PyQt5==5.15.7
 PyQt6==6.4.0
 requests==2.28.1
+save_thread_result==0.0.9

@@ -107,6 +107,9 @@
              </property>
              <item row="0" column="0">
               <layout class="QGridLayout" name="imageDisplayer">
+               <property name="sizeConstraint">
+                <enum>QLayout::SetNoConstraint</enum>
+               </property>
                <property name="spacing">
                 <number>0</number>
                </property>
@@ -161,7 +164,7 @@
               <number>0</number>
              </property>
              <item>
-              <widget class="QPushButton" name="pushButton">
+              <widget class="QPushButton" name="brightnessBtn">
                <property name="cursor">
                 <cursorShape>PointingHandCursor</cursorShape>
                </property>
@@ -171,7 +174,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_2">
+              <widget class="QPushButton" name="contrastBtn">
                <property name="cursor">
                 <cursorShape>PointingHandCursor</cursorShape>
                </property>
@@ -181,7 +184,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_3">
+              <widget class="QPushButton" name="blurBtn">
                <property name="cursor">
                 <cursorShape>PointingHandCursor</cursorShape>
                </property>
@@ -191,12 +194,12 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_4">
+              <widget class="QPushButton" name="enhanceBtn">
                <property name="cursor">
                 <cursorShape>PointingHandCursor</cursorShape>
                </property>
                <property name="text">
-                <string>PushButton</string>
+                <string>Enhance</string>
                </property>
               </widget>
              </item>
@@ -211,12 +214,12 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_6">
+              <widget class="QPushButton" name="reduceSizeonDiskBtn">
                <property name="cursor">
                 <cursorShape>PointingHandCursor</cursorShape>
                </property>
                <property name="text">
-                <string>PushButton</string>
+                <string>Reduce size on Disk</string>
                </property>
               </widget>
              </item>

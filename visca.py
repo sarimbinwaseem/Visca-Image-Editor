@@ -4,7 +4,8 @@ import sys, requests, os
 import cv2
 from PIL import Image
 from helpers import Calc
-
+from viscaEffects import ViscaEffects
+from save_thread_result import ThreadWithResult
 
 
 class ImageWidget(QtWidgets.QLabel):
@@ -25,29 +26,34 @@ class Visca(QtWidgets.QMainWindow):
 	'''Main Visca Image Editor'''
 	def __init__(self):
 		super(Visca, self).__init__()
+		ViscaEffects.__init__(self)
+
 		uic.loadUi(os.path.join("UI", "main.ui"), self)
 		self.setWindowTitle("Visca Image Editor")
 		self.mainImage = ImageWidget()
 		self.imageDisplayer.addWidget(self.mainImage)
 		self.actionOpen.triggered.connect(self.openSourceImage)
 		self.actionSave.triggered.connect(self.saveResultImage)
+		self.enhanceBtn.clicked.connect(self.enhance)
 
 	def openSourceImage(self):
 		self.source_filename = QtWidgets.QFileDialog.getOpenFileName(self,
 			f'Open Image', '.', "Image Files (*.jpeg *.jpg *.png)")[0]
 		# self.source_image_data = cv2.imread(self.source_filename)
 		self.source_image_data = Image.open(self.source_filename)
-		source_image_resized = self.resize_image(self.source_image_data)
-		self.mainImage.setPixmap(self.pixmap_from_cv_image(source_image_resized))
-		# pass
+		self.sourceImageResized = self.resize_image(self.source_image_data)
+		self.mainImage.setPixmap(self.pixmapFromPILImage(self.sourceImageResized))
+		# self.mainImage.adjustSize()
+		# self.imageDisplayer.adjustSize()
+			# pass
 
-	def pixmap_from_cv_image(self, cvImage):
-		# height, width, _ = cvImage.shape
-		width, height = cvImage.size
+	def pixmapFromPILImage(self, srcImgResized):
+
+		width, height = srcImgResized.size
 		print(f"Width: {width}, Height: {height}")
 		bytesPerLine = 3 * width
-		# qImg = QtGui.QImage(cvImage.data, width, height,
-		qImg = QtGui.QImage(cvImage.tobytes("raw", "RGB"), width, height,
+		# qImg = QtGui.QImage(srcImgResized.data, width, height,
+		qImg = QtGui.QImage(srcImgResized.tobytes("raw", "RGB"), width, height,
 			bytesPerLine, QtGui.QImage.Format.Format_RGB888).rgbSwapped()
 		return QtGui.QPixmap(qImg)
 
@@ -62,10 +68,37 @@ class Visca(QtWidgets.QMainWindow):
 		return imageResized
 
 	def saveResultImage(self):
+		try:
+			ext = os.path.basename(self.source_filename).split('.')[-1]
+			self.source_image_data.save(self.source_filename.replace(f".{ext}",
+			f"out.{ext}"))
+			print("Saved..")
+		except Exception as e:
+			print(e)
+	def brightness(self):
 		pass
 
-	# def choose_source_image(self):
+	def contrast(self):
+		pass
 
+	def blur(self):
+		pass
+
+	def enhance(self):
+
+		temp = ThreadWithResult(target = ViscaEffects.enhance, 
+			args = (self, self.sourceImageResized,))
+		temp.start()
+		temp.join()
+		self.sourceImageResized = temp.result
+		self.mainImage.setPixmap(self.pixmapFromPILImage(self.sourceImageResized))
+
+		temp = ThreadWithResult(target = ViscaEffects.enhance, 
+			args = (self, self.source_image_data,))
+		temp.start()
+		temp.join()
+
+		self.source_image_data = temp.result
 
 if __name__ == "__main__":
 	app = QtWidgets.QApplication(sys.argv)

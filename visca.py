@@ -1,7 +1,7 @@
 from PyQt6 import QtWidgets, uic, QtCore, QtGui
 import sys, requests, os
 # from time import sleep
-import cv2
+# import cv2
 from PIL import Image
 from helpers import Calc
 from viscaEffects import ViscaEffects
@@ -32,9 +32,20 @@ class Visca(QtWidgets.QMainWindow):
 		self.setWindowTitle("Visca Image Editor")
 		self.mainImage = ImageWidget()
 		self.imageDisplayer.addWidget(self.mainImage)
+		
+		self.intensityValue = 1
+		self.changeFlag = False
+
 		self.actionOpen.triggered.connect(self.openSourceImage)
 		self.actionSave.triggered.connect(self.saveResultImage)
 		self.enhanceBtn.clicked.connect(self.enhance)
+		self.brightnessBtn.clicked.connect(self.brightness)
+		self.intensitySlider.valueChanged.connect(self.intensity)
+
+	def intensity(self):
+		self.intensityValue = self.intensitySlider.value()
+		self.intensityLabel.setText(str(self.intensityValue))
+		print(self.intensityValue)
 
 	def openSourceImage(self):
 		self.source_filename = QtWidgets.QFileDialog.getOpenFileName(self,
@@ -75,8 +86,20 @@ class Visca(QtWidgets.QMainWindow):
 			print("Saved..")
 		except Exception as e:
 			print(e)
+
 	def brightness(self):
-		pass
+		if self.changeFlag is False:
+			self.imgTemp = self.sourceImageResized
+		else:
+			pass
+
+		temp = ThreadWithResult(target = ViscaEffects.brightness, 
+			args = (self, self.imgTemp,))
+		temp.start()
+		temp.join()
+		self.sourceImageResized = temp.result
+		self.mainImage.setPixmap(self.pixmapFromPILImage(self.sourceImageResized))
+		self.changeFlag = True
 
 	def contrast(self):
 		pass

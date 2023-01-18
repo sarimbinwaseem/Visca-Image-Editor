@@ -214,16 +214,6 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="reduceSizeonDiskBtn">
-               <property name="cursor">
-                <cursorShape>PointingHandCursor</cursorShape>
-               </property>
-               <property name="text">
-                <string>Reduce size on Disk</string>
-               </property>
-              </widget>
-             </item>
-             <item>
               <widget class="QSlider" name="intensitySlider">
                <property name="maximum">
                 <number>200</number>
@@ -278,7 +268,23 @@
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <widget class="QMenu" name="menuConvert">
+     <property name="title">
+      <string>Convert</string>
+     </property>
+     <addaction name="actionFrom_RAW"/>
+     <addaction name="actionFrom_iPhone"/>
+    </widget>
+    <addaction name="actionReduce_Size"/>
+    <addaction name="actionResize"/>
+    <addaction name="menuConvert"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
   </widget>
   <action name="actionOpen">
    <property name="text">
@@ -294,6 +300,26 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionReduce_Size">
+   <property name="text">
+    <string>Reduce Size on Disk</string>
+   </property>
+  </action>
+  <action name="actionResize">
+   <property name="text">
+    <string>Resize</string>
+   </property>
+  </action>
+  <action name="actionFrom_RAW">
+   <property name="text">
+    <string>From RAW</string>
+   </property>
+  </action>
+  <action name="actionFrom_iPhone">
+   <property name="text">
+    <string>From iPhone</string>
    </property>
   </action>
  </widget>

@@ -6,6 +6,7 @@ from PIL import Image
 from helpers import Calc
 from viscaEffects import ViscaEffects
 from save_thread_result import ThreadWithResult
+from rsimageconvertor.convertor import Convertor
 
 
 class ImageWidget(QtWidgets.QLabel):
@@ -38,6 +39,7 @@ class Visca(QtWidgets.QMainWindow):
 
 		self.actionOpen.triggered.connect(self.openSourceImage)
 		self.actionSave.triggered.connect(self.saveResultImage)
+		self.actionReduce_Size.triggered.connect(self.reduceSize)
 		self.enhanceBtn.clicked.connect(self.enhance)
 		self.brightnessBtn.clicked.connect(self.brightness)
 		self.intensitySlider.valueChanged.connect(self.intensity)
@@ -122,6 +124,14 @@ class Visca(QtWidgets.QMainWindow):
 		temp.join()
 
 		self.source_image_data = temp.result
+
+	def reduceSize(self):
+		temp = ThreadWithResult(target = ViscaEffects.reduceSize, 
+			args = (self, self.source_filename,))
+		temp.start()
+		temp.join()
+		self.source_image_data = temp.result
+
 
 if __name__ == "__main__":
 	app = QtWidgets.QApplication(sys.argv)

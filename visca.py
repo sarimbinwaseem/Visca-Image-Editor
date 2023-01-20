@@ -7,7 +7,8 @@ from helpers import Calc
 from viscaEffects import ViscaEffects
 from save_thread_result import ThreadWithResult
 from rsimageconvertor.convertor import Convertor
-
+from multiprocessing import Pool
+from time import perf_counter
 
 class ImageWidget(QtWidgets.QLabel):
     def __init__(self, parent=None):
@@ -33,7 +34,7 @@ class Visca(QtWidgets.QMainWindow):
 		self.setWindowTitle("Visca Image Editor")
 		self.mainImage = ImageWidget()
 		self.imageDisplayer.addWidget(self.mainImage)
-		
+
 		self.intensityValue = 1
 		self.changeFlag = False
 
@@ -67,7 +68,7 @@ class Visca(QtWidgets.QMainWindow):
 		bytesPerLine = 3 * width
 		# qImg = QtGui.QImage(srcImgResized.data, width, height,
 		qImg = QtGui.QImage(srcImgResized.tobytes("raw", "RGB"), width, height,
-			bytesPerLine, QtGui.QImage.Format.Format_RGB888).rgbSwapped()
+			bytesPerLine, QtGui.QImage.Format.Format_RGB888)
 		return QtGui.QPixmap(qImg)
 
 	def resize_image(self, imageData):
@@ -95,13 +96,43 @@ class Visca(QtWidgets.QMainWindow):
 		else:
 			pass
 
-		temp = ThreadWithResult(target = ViscaEffects.brightness, 
-			args = (self, self.imgTemp,))
-		temp.start()
-		temp.join()
-		self.sourceImageResized = temp.result
+		start = perf_counter()
+		# Making pieces of image
+		print("Making Pieces..")
+		pieceThread = ThreadWithResult(target = Calc.sliceImage,
+			args = (self.imgTemp, 6, 6))
+		pieceThread.start()
+		pieceThread.join()
+
+		pieces = pieceThread.result
+		# print(pieces)
+		pieces = [[self.intensityValue, piece] for piece in pieces]
+		# print(pieces)
+		effectedPieces = []
+		with Pool(processes = 4) as pool:
+		    m = pool.map_async(ViscaEffects.brightness, pieces)
+		    effectedPieces.extend(m.get())
+
+		size = self.imgTemp.size
+		self.sourceImageResized = Image.new("RGB", size)
+		xOffset = size[0] // 6
+		yOffset = size[1] // 6
+		for i in range(6):
+			for j in range(6):
+				self.sourceImageResized.paste(effectedPieces[i + j], 
+					(xOffset, yOffset))
+				xOffset += xOffset
+
+			yOffset += yOffset
+
+		# temp = ThreadWithResult(target = ViscaEffects.brightness, 
+		# 	args = (self, self.imgTemp,))
+		# temp.start()
+		# temp.join()
+		# self.sourceImageResized = temp.result
 		self.mainImage.setPixmap(self.pixmapFromPILImage(self.sourceImageResized))
 		self.changeFlag = True
+		print("Time taken:", perf_counter() - start)
 
 	def contrast(self):
 		pass

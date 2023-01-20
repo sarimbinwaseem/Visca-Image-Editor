@@ -33,6 +33,23 @@ class Calc:
 	def adjWidth(self, sourceWidth, sourceHeight, height):
 		return (height * sourceWidth) / sourceHeight
 
+	@staticmethod
+	def sliceImage(im, xPieces, yPieces):
+		pieces = []
+		imgwidth, imgheight = im.size
+		height = imgheight // yPieces
+		width = imgwidth // xPieces
+		for i in range(0, yPieces):
+			for j in range(0, xPieces):
+				box = (j * width, i * height, (j + 1) * width, (i + 1) * height)
+				cropped = im.crop(box)
+				try:
+				# cropped.save(filename + "-" + str(i) + "-" + str(j) + file_extension)
+					pieces.append(cropped)
+				except:
+					print("Cannot append to pieces list..")
+		return pieces
+
 
 # r = Calc()
 # print(r.adjHeight(1920, 1080, 1280))

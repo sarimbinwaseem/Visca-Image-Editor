@@ -205,6 +205,12 @@
              </item>
              <item>
               <widget class="QSlider" name="contrastSlider">
+               <property name="maximum">
+                <number>200</number>
+               </property>
+               <property name="sliderPosition">
+                <number>100</number>
+               </property>
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -232,6 +238,9 @@
              </item>
              <item>
               <widget class="QSlider" name="blurSlider">
+               <property name="maximum">
+                <number>100</number>
+               </property>
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -259,6 +268,9 @@
              </item>
              <item>
               <widget class="QSlider" name="enhanceSlider">
+               <property name="maximum">
+                <number>100</number>
+               </property>
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>

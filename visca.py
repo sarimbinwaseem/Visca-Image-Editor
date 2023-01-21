@@ -102,42 +102,45 @@ class Visca(QtWidgets.QMainWindow):
 		self.intensityLabel.setText(str(self.intensityValue))
 		start = perf_counter()
 		# Making pieces of image
-		# print("Making Pieces..")
-		# pieceThread = ThreadWithResult(target = Calc.sliceImage,
-		# 	args = (self.imgTemp, 6, 6))
-		# pieceThread.start()
-		# pieceThread.join()
+		print("Making Pieces..")
+		pieceThread = ThreadWithResult(target = Calc.sliceImage,
+			args = (self.imgTemp, 6, 6))
+		pieceThread.start()
+		pieceThread.join()
 
-		# pieces = pieceThread.result
+		pieces = pieceThread.result
 
-		# pieces = [[self.intensityValue, piece] for piece in pieces]
-		# # print(pieces)
-		# effectedPieces = []
-		# with Pool(processes = 4) as pool:
-		#     m = pool.map_async(ViscaEffects.brightness, pieces)
-		#     effectedPieces.extend(m.get())
+		newpieces = [[self.intensityValue, piece] for piece in pieces]
+		# print(pieces)
+		effectedPieces = []
+		with Pool(processes = 4) as pool:
+		    m = pool.map_async(ViscaEffects.brightness, newpieces)
+		    effectedPieces.extend(m.get())
 
-		# size = self.imgTemp.size
-		# self.sourceImageResized = Image.new("RGB", size)
-		# x = 0
-		# xOffset = self.imgTemp.width // 6
-		# y = 0
-		# yOffset = self.imgTemp.height // 6
-		# for i in range(6):
-		# 	# print("I:", i)
-		# 	for j in range(6):
-		# 		# print("J:", j)
-		# 		self.sourceImageResized.paste(effectedPieces[i + j], 
-		# 			(x, y))
-		# 		x += xOffset
+		print(len(effectedPieces))
+		size = self.imgTemp.size
+		self.sourceImageResized = Image.new("RGB", size)
+		x = 0
+		xOffset = self.imgTemp.width // 6
+		y = 0
+		yOffset = self.imgTemp.height // 6
+		yy = 1
+		for i in range(6):
+			# print("I:", i)
+			for j in range(6):
+				# print("J:", j)
+				self.sourceImageResized.paste(effectedPieces[i + j], 
+					(x, y))
 
-		# 	y += yOffset
+				x += xOffset
+			x = 0
+			y += yOffset
 
-		temp = ThreadWithResult(target = ViscaEffects.brightness, 
-			args = ([self.intensityValue, self.imgTemp],))
-		temp.start()
-		temp.join()
-		self.sourceImageResized = temp.result
+		# temp = ThreadWithResult(target = ViscaEffects.brightness, 
+		# 	args = ([self.intensityValue, self.imgTemp],))
+		# temp.start()
+		# temp.join()
+		# self.sourceImageResized = temp.result
 		self.mainImage.setPixmap(self.pixmapFromPILImage(self.sourceImageResized))
 		self.changeFlag = True
 		print("Time taken:", perf_counter() - start)

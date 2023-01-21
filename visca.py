@@ -124,15 +124,15 @@ class Visca(QtWidgets.QMainWindow):
 		xOffset = self.imgTemp.width // 6
 		y = 0
 		yOffset = self.imgTemp.height // 6
-		yy = 1
+		yy = 0
 		for i in range(6):
 			# print("I:", i)
 			for j in range(6):
 				# print("J:", j)
-				self.sourceImageResized.paste(effectedPieces[i + j], 
+				self.sourceImageResized.paste(effectedPieces[yy + j],
 					(x, y))
-
 				x += xOffset
+			yy += j + 1
 			x = 0
 			y += yOffset
 

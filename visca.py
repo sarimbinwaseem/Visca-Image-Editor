@@ -35,20 +35,22 @@ class Visca(QtWidgets.QMainWindow):
 		self.mainImage = ImageWidget()
 		self.imageDisplayer.addWidget(self.mainImage)
 
-		self.intensityValue = 1
+		self.intensityValue = 100
 		self.changeFlag = False
 
 		self.actionOpen.triggered.connect(self.openSourceImage)
 		self.actionSave.triggered.connect(self.saveResultImage)
 		self.actionReduce_Size.triggered.connect(self.reduceSize)
-		self.enhanceBtn.clicked.connect(self.enhance)
-		self.brightnessBtn.clicked.connect(self.brightness)
-		self.intensitySlider.valueChanged.connect(self.intensity)
 
-	def intensity(self):
-		self.intensityValue = self.intensitySlider.value()
-		self.intensityLabel.setText(str(self.intensityValue))
-		print(self.intensityValue)
+		self.brightnessSlider.valueChanged.connect(self.brightness)
+		# self.intensitySlider.valueChanged.connect(self.intensity)
+		# self.intensitySlider.valueChanged.connect(self.intensity)
+		# self.intensitySlider.valueChanged.connect(self.intensity)
+
+	# def intensity(self):
+	# 	self.intensityValue = self.intensitySlider.value()
+	# 	self.intensityLabel.setText(str(self.intensityValue))
+	# 	print(self.intensityValue)
 
 	def openSourceImage(self):
 		self.source_filename = QtWidgets.QFileDialog.getOpenFileName(self,
@@ -96,40 +98,46 @@ class Visca(QtWidgets.QMainWindow):
 		else:
 			pass
 
+		self.intensityValue = self.brightnessSlider.value()
+		self.intensityLabel.setText(str(self.intensityValue))
 		start = perf_counter()
 		# Making pieces of image
-		print("Making Pieces..")
-		pieceThread = ThreadWithResult(target = Calc.sliceImage,
-			args = (self.imgTemp, 6, 6))
-		pieceThread.start()
-		pieceThread.join()
+		# print("Making Pieces..")
+		# pieceThread = ThreadWithResult(target = Calc.sliceImage,
+		# 	args = (self.imgTemp, 6, 6))
+		# pieceThread.start()
+		# pieceThread.join()
 
-		pieces = pieceThread.result
-		# print(pieces)
-		pieces = [[self.intensityValue, piece] for piece in pieces]
-		# print(pieces)
-		effectedPieces = []
-		with Pool(processes = 4) as pool:
-		    m = pool.map_async(ViscaEffects.brightness, pieces)
-		    effectedPieces.extend(m.get())
+		# pieces = pieceThread.result
 
-		size = self.imgTemp.size
-		self.sourceImageResized = Image.new("RGB", size)
-		xOffset = size[0] // 6
-		yOffset = size[1] // 6
-		for i in range(6):
-			for j in range(6):
-				self.sourceImageResized.paste(effectedPieces[i + j], 
-					(xOffset, yOffset))
-				xOffset += xOffset
+		# pieces = [[self.intensityValue, piece] for piece in pieces]
+		# # print(pieces)
+		# effectedPieces = []
+		# with Pool(processes = 4) as pool:
+		#     m = pool.map_async(ViscaEffects.brightness, pieces)
+		#     effectedPieces.extend(m.get())
 
-			yOffset += yOffset
+		# size = self.imgTemp.size
+		# self.sourceImageResized = Image.new("RGB", size)
+		# x = 0
+		# xOffset = self.imgTemp.width // 6
+		# y = 0
+		# yOffset = self.imgTemp.height // 6
+		# for i in range(6):
+		# 	# print("I:", i)
+		# 	for j in range(6):
+		# 		# print("J:", j)
+		# 		self.sourceImageResized.paste(effectedPieces[i + j], 
+		# 			(x, y))
+		# 		x += xOffset
 
-		# temp = ThreadWithResult(target = ViscaEffects.brightness, 
-		# 	args = (self, self.imgTemp,))
-		# temp.start()
-		# temp.join()
-		# self.sourceImageResized = temp.result
+		# 	y += yOffset
+
+		temp = ThreadWithResult(target = ViscaEffects.brightness, 
+			args = ([self.intensityValue, self.imgTemp],))
+		temp.start()
+		temp.join()
+		self.sourceImageResized = temp.result
 		self.mainImage.setPixmap(self.pixmapFromPILImage(self.sourceImageResized))
 		self.changeFlag = True
 		print("Time taken:", perf_counter() - start)

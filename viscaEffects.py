@@ -7,7 +7,7 @@ class ViscaEffects:
 		image = obj[1]
 		bright = ImageEnhance.Brightness(image)
 		intensity = float(intensityValue / 100) # 0.0 -> 1 -> 2
-		# print(intensity)
+		print(intensity)
 		image = bright.enhance(intensity)
 		return image
 

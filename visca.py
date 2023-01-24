@@ -10,6 +10,24 @@ from rsimageconvertor.convertor import Convertor
 from multiprocessing import Pool
 from time import perf_counter
 
+class CustomDialog(QtWidgets.QDialog):
+    def __init__(self, parent = None):
+        super().__init__(parent)
+
+        self.setWindowTitle("HELLO!")
+
+        QBtn = QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel
+
+        self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+
+        self.layout = QtWidgets.QVBoxLayout()
+        message = QtWidgets.QLabel("Something happened, is that OK?")
+        self.layout.addWidget(message)
+        self.layout.addWidget(self.buttonBox)
+        self.setLayout(self.layout)
+
 class ImageWidget(QtWidgets.QLabel):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -168,11 +186,13 @@ class Visca(QtWidgets.QMainWindow):
 		self.source_image_data = temp.result
 
 	def reduceSize(self):
-		temp = ThreadWithResult(target = ViscaEffects.reduceSize, 
-			args = (self, self.source_filename,))
-		temp.start()
-		temp.join()
-		self.source_image_data = temp.result
+		dlg = CustomDialog(self)
+		dlg.exec()
+		# temp = ThreadWithResult(target = ViscaEffects.reduceSize, 
+		# 	args = (self, self.source_filename,))
+		# temp.start()
+		# temp.join()
+		# self.source_image_data = temp.result
 
 
 if __name__ == "__main__":

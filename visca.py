@@ -6,23 +6,23 @@ from PIL import Image
 from helpers import Calc
 from viscaEffects import ViscaEffects
 from save_thread_result import ThreadWithResult
-from rsimageconvertor.convertor import Convertor
+# from rsimageconvertor.convertor import Convertor
 from multiprocessing import Pool
 from time import perf_counter
 
 class ImageWidget(QtWidgets.QLabel):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setScaledContents(True)
-    # def hasHeightForWidth(self):
-    # 	return self.pixmap() is not None
+	def __init__(self, parent=None):
+		super().__init__(parent)
+		self.setScaledContents(True)
+	# def hasHeightForWidth(self):
+	# 	return self.pixmap() is not None
 
-    # def heightForWidth(self, w):
-    # 	if self.pixmap():
-    # 		try:
-    # 			return int(w * (self.pixmap().height() / self.pixmap().width()))
-    # 		except ZeroDivisionError:
-    # 			return 0
+	# def heightForWidth(self, w):
+	# 	if self.pixmap():
+	# 		try:
+	# 			return int(w * (self.pixmap().height() / self.pixmap().width()))
+	# 		except ZeroDivisionError:
+	# 			return 0
 
 class Visca(QtWidgets.QMainWindow):
 	'''Main Visca Image Editor'''
@@ -40,10 +40,10 @@ class Visca(QtWidgets.QMainWindow):
 
 		self.actionOpen.triggered.connect(self.openSourceImage)
 		self.actionSave.triggered.connect(self.saveResultImage)
-		self.actionReduce_Size.triggered.connect(self.reduceSize)
+		# self.actionReduce_Size.triggered.connect(self.reduceSize)
 
 		self.brightnessSlider.valueChanged.connect(self.brightness)
-		# self.intensitySlider.valueChanged.connect(self.intensity)
+		self.enhanceSlider.valueChanged.connect(self.enhance)
 		# self.intensitySlider.valueChanged.connect(self.intensity)
 		# self.intensitySlider.valueChanged.connect(self.intensity)
 
@@ -102,6 +102,91 @@ class Visca(QtWidgets.QMainWindow):
 		self.intensityLabel.setText(str(self.intensityValue))
 		start = perf_counter()
 		# Making pieces of image
+		# print("Making Pieces..")
+		# pieceThread = ThreadWithResult(target = Calc.sliceImage,
+		# 	args = (self.imgTemp, 6, 6))
+		# pieceThread.start()
+		# pieceThread.join()
+
+		# pieces = pieceThread.result
+
+		# newpieces = [[self.intensityValue, piece] for piece in pieces]
+		# # print(pieces)
+		# effectedPieces = []
+		# with Pool(processes = 4) as pool:
+		# 	m = pool.map_async(ViscaEffects.brightness, newpieces)
+		# 	effectedPieces.extend(m.get())
+
+		# print(len(effectedPieces))
+		# size = self.imgTemp.size
+		# self.sourceImageResized = Image.new("RGB", size)
+		# x = 0
+		# xOffset = self.imgTemp.width // 6
+		# y = 0
+		# yOffset = self.imgTemp.height // 6
+		# yy = 0
+		# for i in range(6):
+		# 	# print("I:", i)
+		# 	for j in range(6):
+		# 		# print("J:", j)
+		# 		self.sourceImageResized.paste(effectedPieces[yy + j],
+		# 			(x, y))
+		# 		x += xOffset
+		# 	yy += j + 1
+		# 	x = 0
+		# 	y += yOffset
+
+		temp = ThreadWithResult(target = ViscaEffects.brightness, 
+			args = ([self.intensityValue, self.imgTemp],))
+		temp.start()
+		temp.join()
+		self.sourceImageResized = temp.result
+		self.mainImage.setPixmap(self.pixmapFromPILImage(self.sourceImageResized))
+		self.changeFlag = True
+		print("Time taken:", perf_counter() - start)
+
+	def contrast(self):
+		pass
+
+	def blur(self):
+		from scipy import misc,ndimage
+    
+		face = misc.face()  
+		blurred_face = ndimage.gaussian_filter(face, sigma=3)  
+		very_blurred = ndimage.gaussian_filter(face, sigma=5)
+   
+	#Results  
+		plt.imshow()
+
+	def enhance(self):
+
+		# temp = ThreadWithResult(target = ViscaEffects.enhance, 
+		# 	args = (self, self.sourceImageResized,))
+		# temp.start()
+		# temp.join()
+		# self.sourceImageResized = temp.result
+		# self.mainImage.setPixmap(self.pixmapFromPILImage(self.sourceImageResized))
+
+		# temp = ThreadWithResult(target = ViscaEffects.enhance, 
+		# 	args = (self, self.source_image_data,))
+		# temp.start()
+		# temp.join()
+
+		# self.source_image_data = temp.result
+
+		# def reduceSize(self):
+		#	temp = ThreadWithResult(target = ViscaEffects.reduceSize, 
+		# 		args = (self, self.source_filename,))
+		# 	temp.start()
+		# 	temp.join()
+		# 	self.source_image_data = temp.result
+		if self.changeFlag is False:
+			self.imgTemp = self.sourceImageResized
+		
+		self.intensityValue = self.enhanceSlider.value()
+		self.intensityLabel.setText(str(self.intensityValue))
+		start = perf_counter()
+		# Making pieces of image
 		print("Making Pieces..")
 		pieceThread = ThreadWithResult(target = Calc.sliceImage,
 			args = (self.imgTemp, 6, 6))
@@ -110,12 +195,12 @@ class Visca(QtWidgets.QMainWindow):
 
 		pieces = pieceThread.result
 
-		newpieces = [[self.intensityValue, piece] for piece in pieces]
+		# newpieces = [[self.intensityValue, piece] for piece in pieces]
 		# print(pieces)
 		effectedPieces = []
 		with Pool(processes = 4) as pool:
-		    m = pool.map_async(ViscaEffects.brightness, newpieces)
-		    effectedPieces.extend(m.get())
+			m = pool.map_async(ViscaEffects.enhance, pieces)
+			effectedPieces.extend(m.get())
 
 		print(len(effectedPieces))
 		size = self.imgTemp.size
@@ -135,45 +220,15 @@ class Visca(QtWidgets.QMainWindow):
 			yy += j + 1
 			x = 0
 			y += yOffset
-
-		# temp = ThreadWithResult(target = ViscaEffects.brightness, 
-		# 	args = ([self.intensityValue, self.imgTemp],))
-		# temp.start()
-		# temp.join()
-		# self.sourceImageResized = temp.result
+	
+			# temp = ThreadWithResult(target = ViscaEffects.enhance, 
+			# 	args = ([self.intensityValue, self.imgTemp],))
+			# temp.start()
+			# temp.join()
+			# self.sourceImageResized = temp.result
 		self.mainImage.setPixmap(self.pixmapFromPILImage(self.sourceImageResized))
 		self.changeFlag = True
 		print("Time taken:", perf_counter() - start)
-
-	def contrast(self):
-		pass
-
-	def blur(self):
-		pass
-
-	def enhance(self):
-
-		temp = ThreadWithResult(target = ViscaEffects.enhance, 
-			args = (self, self.sourceImageResized,))
-		temp.start()
-		temp.join()
-		self.sourceImageResized = temp.result
-		self.mainImage.setPixmap(self.pixmapFromPILImage(self.sourceImageResized))
-
-		temp = ThreadWithResult(target = ViscaEffects.enhance, 
-			args = (self, self.source_image_data,))
-		temp.start()
-		temp.join()
-
-		self.source_image_data = temp.result
-
-	def reduceSize(self):
-		temp = ThreadWithResult(target = ViscaEffects.reduceSize, 
-			args = (self, self.source_filename,))
-		temp.start()
-		temp.join()
-		self.source_image_data = temp.result
-
 
 if __name__ == "__main__":
 	app = QtWidgets.QApplication(sys.argv)

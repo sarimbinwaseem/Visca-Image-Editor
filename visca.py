@@ -235,41 +235,6 @@ class Visca(QtWidgets.QMainWindow):
 		self.changeFlag = True
 		print("Time taken:", perf_counter() - start)
 
-<<<<<<< HEAD
-	def contrast(self):
-		pass
-
-	def blur(self):
-		pass
-
-	def enhance(self):
-
-		temp = ThreadWithResult(target = ViscaEffects.enhance, 
-			args = (self, self.sourceImageResized,))
-		temp.start()
-		temp.join()
-		self.sourceImageResized = temp.result
-		self.mainImage.setPixmap(self.pixmapFromPILImage(self.sourceImageResized))
-
-		temp = ThreadWithResult(target = ViscaEffects.enhance, 
-			args = (self, self.source_image_data,))
-		temp.start()
-		temp.join()
-
-		self.source_image_data = temp.result
-
-	def reduceSize(self):
-		dlg = CustomDialog(self)
-		dlg.exec()
-		# temp = ThreadWithResult(target = ViscaEffects.reduceSize, 
-		# 	args = (self, self.source_filename,))
-		# temp.start()
-		# temp.join()
-		# self.source_image_data = temp.result
-
-
-=======
->>>>>>> 353ccd8a69c094782954626f216f6170b4a43a4d
 if __name__ == "__main__":
 	app = QtWidgets.QApplication(sys.argv)
 	window = Visca()

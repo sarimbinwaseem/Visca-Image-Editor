@@ -55,13 +55,15 @@ class Visca(QtWidgets.QMainWindow):
 
 		self.intensityValue = 100
 		self.changeFlag = False
+		self.enhanceIntensity = 0
+		self.brightnessValue = 100
 
 		self.actionOpen.triggered.connect(self.openSourceImage)
 		self.actionSave.triggered.connect(self.saveResultImage)
 		# self.actionReduce_Size.triggered.connect(self.reduceSize)
 
 		self.brightnessSlider.valueChanged.connect(self.brightness)
-		self.enhanceSlider.valueChanged.connect(self.enhance)
+		self.enhanceButton.clicked.connect(self.enhance)
 		# self.intensitySlider.valueChanged.connect(self.intensity)
 		# self.intensitySlider.valueChanged.connect(self.intensity)
 
@@ -121,38 +123,23 @@ class Visca(QtWidgets.QMainWindow):
 		start = perf_counter()
 		# Making pieces of image
 		# print("Making Pieces..")
-		# pieceThread = ThreadWithResult(target = Calc.sliceImage,
-		# 	args = (self.imgTemp, 6, 6))
-		# pieceThread.start()
-		# pieceThread.join()
+		pieceThread = ThreadWithResult(target = Calc.sliceImage,
+			args = (self.imgTemp, 6, 6))
+		pieceThread.start()
+		pieceThread.join()
 
-		# pieces = pieceThread.result
+		pieces = pieceThread.result
 
-		# newpieces = [[self.intensityValue, piece] for piece in pieces]
+		newpieces = [[self.intensityValue, piece] for piece in pieces]
 		# # print(pieces)
-		# effectedPieces = []
-		# with Pool(processes = 4) as pool:
-		# 	m = pool.map_async(ViscaEffects.brightness, newpieces)
-		# 	effectedPieces.extend(m.get())
+		effectedPieces = []
+		with Pool(processes = 4) as pool:
+			m = pool.map_async(ViscaEffects.brightness, newpieces)
+			effectedPieces.extend(m.get())
 
-		# print(len(effectedPieces))
-		# size = self.imgTemp.size
-		# self.sourceImageResized = Image.new("RGB", size)
-		# x = 0
-		# xOffset = self.imgTemp.width // 6
-		# y = 0
-		# yOffset = self.imgTemp.height // 6
-		# yy = 0
-		# for i in range(6):
-		# 	# print("I:", i)
-		# 	for j in range(6):
-		# 		# print("J:", j)
-		# 		self.sourceImageResized.paste(effectedPieces[yy + j],
-		# 			(x, y))
-		# 		x += xOffset
-		# 	yy += j + 1
-		# 	x = 0
-		# 	y += yOffset
+		print(len(effectedPieces))
+		size = self.imgTemp.size
+		self.sourceImageResized = Calc.rebuildImage(size, effectedPieces)
 
 		temp = ThreadWithResult(target = ViscaEffects.brightness, 
 			args = ([self.intensityValue, self.imgTemp],))
@@ -178,8 +165,11 @@ class Visca(QtWidgets.QMainWindow):
 
 	def enhance(self):
 
+		# if self.changeFlag is False:
+		# 	self.sourceImageResized = self.sourceImageResized
+
 		# temp = ThreadWithResult(target = ViscaEffects.enhance, 
-		# 	args = (self, self.sourceImageResized,))
+		# 	args = (self.sourceImageResized,))
 		# temp.start()
 		# temp.join()
 		# self.sourceImageResized = temp.result
@@ -198,35 +188,32 @@ class Visca(QtWidgets.QMainWindow):
 		# 	temp.start()
 		# 	temp.join()
 		# 	self.source_image_data = temp.result
-		if self.changeFlag is False:
-			self.imgTemp = self.sourceImageResized
-		
-		self.intensityValue = self.enhanceSlider.value()
-		self.intensityLabel.setText(str(self.intensityValue))
+
 		start = perf_counter()
 		# Making pieces of image
 		print("Making Pieces..")
 		pieceThread = ThreadWithResult(target = Calc.sliceImage,
-			args = (self.imgTemp, 6, 6))
+			args = (self.sourceImageResized, 6, 6))
 		pieceThread.start()
 		pieceThread.join()
 
 		pieces = pieceThread.result
-
-		# newpieces = [[self.intensityValue, piece] for piece in pieces]
 		# print(pieces)
+		# print("Applying Effect...")
 		effectedPieces = []
 		with Pool(processes = 4) as pool:
 			m = pool.map_async(ViscaEffects.enhance, pieces)
 			effectedPieces.extend(m.get())
 
 		print(len(effectedPieces))
-		size = self.imgTemp.size
+
+		# # print("Merging Picture...")
+		size = self.sourceImageResized.size
 		self.sourceImageResized = Image.new("RGB", size)
 		x = 0
-		xOffset = self.imgTemp.width // 6
+		xOffset = self.sourceImageResized.width // 6
 		y = 0
-		yOffset = self.imgTemp.height // 6
+		yOffset = self.sourceImageResized.height // 6
 		yy = 0
 		for i in range(6):
 			# print("I:", i)
@@ -240,7 +227,7 @@ class Visca(QtWidgets.QMainWindow):
 			y += yOffset
 	
 			# temp = ThreadWithResult(target = ViscaEffects.enhance, 
-			# 	args = ([self.intensityValue, self.imgTemp],))
+			# 	args = ([self.intensityValue, self.sourceImageResized],))
 			# temp.start()
 			# temp.join()
 			# self.sourceImageResized = temp.result

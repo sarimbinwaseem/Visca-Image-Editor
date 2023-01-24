@@ -1,3 +1,5 @@
+from PIL import Image
+
 class Calc:
 	def __init__(self, imageSize):
 		self.displayWidth = imageSize.width()
@@ -49,6 +51,27 @@ class Calc:
 				except:
 					print("Cannot append to pieces list..")
 		return pieces
+
+	@staticmethod
+	def rebuildImage(size, pieces):
+		newImage = Image.new("RGB", size)
+		x = 0
+		xOffset = size[0] // 6
+		y = 0
+		yOffset = size[1] // 6
+		yy = 0
+		for i in range(6):
+			# print("I:", i)
+			for j in range(6):
+				# print("J:", j)
+				newImage.paste(pieces[yy + j],
+					(x, y))
+				x += xOffset
+			yy += j + 1
+			x = 0
+			y += yOffset
+
+		return newImage
 
 
 # r = Calc()

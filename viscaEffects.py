@@ -19,8 +19,8 @@ class ViscaEffects:
 
 	@staticmethod
 	def enhance(image):
-		image = image.filter(ImageFilter.DETAIL)
-		return image
+		eimage = image.filter(ImageFilter.DETAIL)
+		return eimage
 
 	# def reduceSize(self, image):
 	# 	convertor = Convertor()

@@ -267,12 +267,9 @@
               </widget>
              </item>
              <item>
-              <widget class="QSlider" name="enhanceSlider">
-               <property name="maximum">
-                <number>100</number>
-               </property>
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
+              <widget class="QPushButton" name="enhanceButton">
+               <property name="text">
+                <string>Enhance</string>
                </property>
               </widget>
              </item>

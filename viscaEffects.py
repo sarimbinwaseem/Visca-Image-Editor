@@ -1,5 +1,5 @@
 from PIL import ImageFilter, ImageEnhance
-from rsimageconvertor.convertor import Convertor
+# from rsimageconvertor.convertor import Convertor
 
 class ViscaEffects:
 	def brightness(obj):
@@ -17,11 +17,12 @@ class ViscaEffects:
 	def blur(self):
 		pass
 
-	def enhance(self, image):
+	@staticmethod
+	def enhance(image):
 		image = image.filter(ImageFilter.DETAIL)
 		return image
 
-	def reduceSize(self, image):
-		convertor = Convertor()
-		image = convertor.compressOne(image, 2000)
-		return image
+	# def reduceSize(self, image):
+	# 	convertor = Convertor()
+	# 	image = convertor.compressOne(image, 2000)
+	# 	return image

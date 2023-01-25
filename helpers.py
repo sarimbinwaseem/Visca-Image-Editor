@@ -8,14 +8,20 @@ class Calc:
 		print(f"Display Dimension: {self.displayWidth}, {self.displayHeight}")
 
 	def getNewDimensions(self, sourceWidth, sourceHeight):
+		'''Calculating new dimensions to fit into display.'''
+
 		if sourceWidth >= self.displayWidth:
+			# Subtracting extra width from source to fit in display.
 			newSourceWidth = sourceWidth - (sourceWidth - self.displayWidth)
+			# Getting new adjusted height w.r.t. aspect ratio.
 			newSourceHeight = self.adjHeight(sourceWidth, sourceHeight, newSourceWidth)
 			
+			# Checking again if the height is now exceding the display size.
 			if newSourceHeight > self.displayHeight:
 				newSourceHeight = newSourceHeight - (newSourceHeight - self.displayHeight)
 				newSourceWidth = self.adjWidth(sourceWidth, sourceHeight, newSourceHeight)
 
+		# Same as above for height.
 		elif sourceHeight >= self.displayHeight:
 			newSourceHeight = sourceHeight - (sourceHeight - self.displayHeight)
 			newSourceWidth = self.adjWidth(sourceWidth, sourceHeight, newSourceHeight)
@@ -30,13 +36,16 @@ class Calc:
 		return (int(newSourceWidth), int(newSourceHeight))
 
 	def adjHeight(self, sourceWidth, sourceHeight, width):
+		'''Adjusting height for width'''
 		return (sourceHeight * width) / sourceWidth
 
 	def adjWidth(self, sourceWidth, sourceHeight, height):
+		'''Adjusting width for height'''
 		return (height * sourceWidth) / sourceHeight
 
 	@staticmethod
 	def sliceImage(im, xPieces, yPieces):
+		'''Slicing image into pieces.'''
 		pieces = []
 		imgwidth, imgheight = im.size
 		height = imgheight // yPieces
@@ -55,6 +64,7 @@ class Calc:
 
 	@staticmethod
 	def rebuildImage(size, pieces):
+		'''Rebuilding image from pieces.'''
 		newImage = Image.new("RGB", size)
 		x = 0
 		xOffset = size[0] // 6

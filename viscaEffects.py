@@ -11,9 +11,6 @@ class ViscaEffects:
 		image = bright.enhance(intensity)
 		return image
 
-	def contrast(self):
-		pass
-
 	@staticmethod
 	def blur(obj):
 		intensity = obj[0]

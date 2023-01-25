@@ -44,6 +44,7 @@ class Calc:
 		for i in range(0, yPieces):
 			for j in range(0, xPieces):
 				box = (j * width, i * height, (j + 1) * width, (i + 1) * height)
+				# print("Box:", box)
 				cropped = im.crop(box)
 				try:
 				# cropped.save(filename + "-" + str(i) + "-" + str(j) + file_extension)

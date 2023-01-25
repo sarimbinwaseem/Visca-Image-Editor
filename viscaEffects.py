@@ -14,8 +14,13 @@ class ViscaEffects:
 	def contrast(self):
 		pass
 
-	def blur(self):
-		pass
+	@staticmethod
+	def blur(obj):
+		intensity = obj[0]
+		image = obj[1]
+
+		eimage = image.filter(ImageFilter.GaussianBlur(radius = intensity))
+		return eimage
 
 	@staticmethod
 	def enhance(image):

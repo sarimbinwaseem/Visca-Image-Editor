@@ -7,7 +7,7 @@ from helpers import Calc
 from viscaEffects import ViscaEffects
 from save_thread_result import ThreadWithResult
 # from rsimageconvertor.convertor import Convertor
-from multiprocessing import Pool
+from multiprocessing import Pool, Pipe, Process
 from time import perf_counter
 
 # class ResizeDialog(QtWidgets.QDialog):
@@ -112,12 +112,19 @@ class Visca(QtWidgets.QMainWindow):
 			ext = os.path.basename(self.sourceFilename).split('.')[-1]
 			if self.saveMultiThreaded:
 				print("Slicing Image...")
-				pieceThread = ThreadWithResult(target = Calc.sliceImage,
-				args = (self.sourceImageData, 6, 6))
-				pieceThread.start()
-				pieceThread.join()
+				# pieceThread = ThreadWithResult(target = Calc.sliceImage,
+				# args = (self.sourceImageData, 6, 6))
+				# pieceThread.start()
+				# pieceThread.join()
 
-				pieces = pieceThread.result
+				# pieces = pieceThread.result
+
+				parentConn, childConn = Pipe()
+				seliec = Process(target = Calc.sliceImage,
+					args = (self.sourceImageData, 6, 6, childConn))
+				seliec.start()
+				pieces = parentConn.recv()
+				seliec.join()
 
 			print("Applying Effects...")
 			if self.brightnessValue != 100:
@@ -203,12 +210,18 @@ class Visca(QtWidgets.QMainWindow):
 
 		# Making pieces of image
 		# print("Making Pieces..")
-		pieceThread = ThreadWithResult(target = Calc.sliceImage,
-			args = (self.imgTemp, 6, 6))
-		pieceThread.start()
-		pieceThread.join()
+		# pieceThread = ThreadWithResult(target = Calc.sliceImage,
+		# 	args = (self.imgTemp, 6, 6))
+		# pieceThread.start()
+		# pieceThread.join()
+		# pieces = pieceThread.result
 
-		pieces = pieceThread.result
+		parentConn, childConn = Pipe()
+		seliec = Process(target = Calc.sliceImage,
+			args = (self.imgTemp, 6, 6, childConn))
+		seliec.start()
+		pieces = parentConn.recv()
+		seliec.join()
 
 		# Making new list with intensity value for each piece.
 		newpieces = [[self.intensityValue, piece] for piece in pieces]
@@ -250,12 +263,19 @@ class Visca(QtWidgets.QMainWindow):
 		start = perf_counter()
 		# Making pieces of image
 		print("Making Pieces..")
-		pieceThread = ThreadWithResult(target = Calc.sliceImage,
-			args = (self.imgTemp, 6, 6))
-		pieceThread.start()
-		pieceThread.join()
+		# pieceThread = ThreadWithResult(target = Calc.sliceImage,
+		# 	args = (self.imgTemp, 6, 6))
+		# pieceThread.start()
+		# pieceThread.join()
+		# pieces = pieceThread.result
 
-		pieces = pieceThread.result
+		parentConn, childConn = Pipe()
+		seliec = Process(target = Calc.sliceImage,
+			args = (self.imgTemp, 6, 6, childConn))
+		seliec.start()
+		pieces = parentConn.recv()
+		seliec.join()
+		
 		newpieces = [[self.intensityValue, piece] for piece in pieces]
 		# print(pieces)
 		print("Applying Effect...")
@@ -287,12 +307,19 @@ class Visca(QtWidgets.QMainWindow):
 		start = perf_counter()
 		# Making pieces of image
 		print("Making Pieces..")
-		pieceThread = ThreadWithResult(target = Calc.sliceImage,
-			args = (self.sourceImageResized, 6, 6))
-		pieceThread.start()
-		pieceThread.join()
+		# pieceThread = ThreadWithResult(target = Calc.sliceImage,
+		# 	args = (self.sourceImageResized, 6, 6))
+		# pieceThread.start()
+		# pieceThread.join()
+		# pieces = pieceThread.result
 
-		pieces = pieceThread.result
+		parentConn, childConn = Pipe()
+		seliec = Process(target = Calc.sliceImage,
+			args = (self.sourceImageResized, 6, 6, childConn))
+		seliec.start()
+		pieces = parentConn.recv()
+		seliec.join()
+
 		# print(pieces)
 		print("Applying Effect...")
 		effectedPieces = []

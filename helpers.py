@@ -44,7 +44,7 @@ class Calc:
 		return (height * sourceWidth) / sourceHeight
 
 	@staticmethod
-	def sliceImage(im, xPieces, yPieces):
+	def sliceImage(im, xPieces, yPieces, childConn):
 		'''Slicing image into pieces.'''
 		pieces = []
 		imgwidth, imgheight = im.size
@@ -60,7 +60,7 @@ class Calc:
 					pieces.append(cropped)
 				except:
 					print("Cannot append to pieces list..")
-		return pieces
+		childConn.send(pieces)
 
 	@staticmethod
 	def rebuildImage(size, pieces):

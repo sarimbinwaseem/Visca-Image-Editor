@@ -1,8 +1,8 @@
-Flask==2.2.2
-Flask_Migrate==4.0.0
+Flask==3.0.0
+Flask_Migrate==4.0.5
 Flask_SQLAlchemy==2.5.1
 Pillow==10.0.1
 PyQt5==5.15.7
 PyQt6==6.4.0
-requests==2.28.1
+requests==2.31.0
 save_thread_result==0.0.9
